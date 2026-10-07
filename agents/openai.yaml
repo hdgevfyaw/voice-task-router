@@ -1,0 +1,4 @@
+interface:
+  display_name: "语音需求与任务推进"
+  short_description: "本对话启用一次后持续澄清需求、修订提示词，并推荐下一步及模型强度"
+  default_prompt: "使用 $voice-task-router 在本对话持续讨论和确认需求；后续补充与纠正继续更新同一草稿，交付时必须给完整提示词、完整模型名和推理强度，我说下一步时先读取最新进度。"

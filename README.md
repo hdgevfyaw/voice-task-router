@@ -6,6 +6,17 @@ Voice Task Router 是一个面向 Codex 的需求讨论 skill：把还没理顺�
 
 你不必一开始就会写提示词，也不用把要求一次讲完。先说个大概，想到新条件时继续补充，发现理解错了就纠正。Router 会维护同一份需求草稿，只追问可能改变任务方向的关键问题，最后给出完整提示词和模型、推理强度建议。
 
+## 本次更新｜2026-10-10
+
+- 关联工作对话后，每轮答疑、补充和改稿前都刷新进度，按完成、进行中和阻塞状态决定下一步。
+- 提示词围绕目标精简，只保留影响执行的上下文、约束和交付要求；失败任务再次尝试时须有新证据或方法变化。
+- 默认给一份完整任务提示词；按任务难度选择模型与推理强度，复杂任务可由 Sol/Astra 主模型按需分配 Luna X-High，并由主模型负责整合交付。
+
+## Latest update — 2026-10-10
+
+- Refresh the linked work chat before every discussion, correction, and prompt revision; use current completion, active-work, and blocker evidence to choose next steps.
+- Keep prompts concise and centered on the outcome, preserving only relevant context, constraints, and deliverables. Repeated attempts need new evidence or a changed approach.
+- Prefer one end-to-end task prompt. Route by task difficulty and reasoning effort; let a capable Sol/Astra host use Luna X-High workers when useful and own final integration.
 ## 30 秒看懂它怎么帮你
 
 ~~~mermaid
@@ -34,7 +45,7 @@ Voice Task Router 把这个过程变成一份持续维护的需求草稿：
 | 发现方向理解错了 | 更新有误的部分，同时保留仍适用的要求 |
 | 不确定还要回答多少问题 | 只追问会改变方案的关键缺口，普通细节留给工作阶段 |
 | 不知道怎么交给另一个对话 | 输出完整、可复制的提示词，以及模型和推理强度建议 |
-| 项目进行到一半，不知下一步做什么 | 你说“下一步”时，先读取可访问的最新项目进展，再提出建议 |
+| 项目进行到一半，不知下一步做什么 | 关联后每轮先读取最新进展，再据此讨论、修订或建议下一步 |
 
 它尤其适合语音输入、边想边说、需求经常变化、需要多轮整理的场景。简单而明确的问题直接问 Codex 就可以，不必额外启用它。
 

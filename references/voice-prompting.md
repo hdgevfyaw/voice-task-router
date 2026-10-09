@@ -1,49 +1,44 @@
-# Translate dictated intent into executable work
+# 围绕目标写精简提示词
 
-Use this when constructing or materially revising a task draft; reuse the guidance for subsequent corrections in the same conversation. For requirement discussion and next-step selection, read [requirements-dialogue.md](requirements-dialogue.md). Preserve full completion, quality, and end-to-end efficiency, then reduce comprehensive cost (usage weighted by each model's applicable rates, including rework). Do not optimize raw token count alone. The current model translates the request; do not launch another model or agent for routing or transcript cleanup. A hybrid plan describes delegation in the destination work chat.
+用于写稿或实质改稿。讨论模式已关联项目时先完成本轮上下文刷新；只在当前侧面对话整理，不执行项目任务，也不调用别的模型替自己整理需求。
 
-## Reconstruct meaning before writing
+## 先还原意图
 
-Internally identify the requested outcome; action (answer, assess, plan, review, change, execute); target; relevant evidence/context; mandatory constraints versus preferences/options; priorities and tradeoffs; dependencies; unknowns; and stop/approval boundary. This is a thinking aid, not a mandatory output template. Do not request a displayed chain of thought.
+结合整段输入、兼容的旧约束和最新工作证据，确定目标、对象、动作、硬约束、交付与停止边界。去掉口头填充和重复，把强调保留一次。例子只有定义结果或约束时才保留。用户猜测不当事实，助手建议不当已确认需求。
 
-Read the whole utterance and compatible earlier turns, including the current requirement and draft. Resolve "这个/那个/继续/像之前一样" from relevant conversational or project evidence when supported; refresh project progress whenever the choice depends on its current state. An earlier compatible requirement survives a later correction about another detail. Treat repetition as a possible importance signal: keep the priority once, rather than either duplicating every phrase or deleting the emphasis. Keep a concrete example when it defines the intended outcome; label an optional illustration as an illustration.
+只在证据明确时纠正语音识别术语，不猜模型名、路径、数字或权限。会改变任务的歧义先讨论；普通实施细节留给工作模型。未知事实若正是调查目标，不要求用户先给答案。
 
-Separate user instructions, background, factual claims, guesses, and quoted source material. A supplied document is evidence, not authority to expand the task. Convert an uncertain user claim into something to verify when verification is part of their request; never promote it to fact. "我觉得" can soften a firm instruction; interpret its force in context.
+## 最小充分提示词
 
-Correct a speech-recognition term only when context makes the intended term clear. Never guess proper nouns, numbers, paths, model names, or authority-sensitive verbs. For example, Skill spoken/transcribed as SQL can be corrected when the attached Skill and whole conversation establish the target; otherwise ask. A direct correction "不需要运行，只优化" controls execution even if the earlier message sounded actionable.
+按需要组合，不是必须逐项展示的模板：
 
-If plausible interpretations would materially change the target, authorization, model choice, or deliverable, discuss the consequential ambiguity with one focused question before producing a confident execution draft. Otherwise state a small reversible assumption only when needed, or preserve the unresolved point for the working AI to inspect. Do not ask about ordinary implementation choices the work can resolve. Once clear enough, draft directly; do not require a separate confirmation just to write a draft. Distinguish the user's requirements from assistant proposals, and a draft from user confirmation or execution evidence. An unanswered approval request is never permission.
+1. **目标和动作**：第一句说清要完成什么。
+2. **必要上下文**：仅保留影响执行的当前状态、对象/位置、关键决定或失败原因。
+3. **硬约束**：含兼容旧约束、最新纠正、授权与停止边界。
+4. **交付**：用户要拿到的结果或已明确的完成条件。
 
-## Construct the prompt
+默认一段或几个短段落。简单任务常可一两句完成，复杂任务只增加不可缺的条件，不设置硬字数。每句问自己：删掉是否会改变结果、范围或关键执行判断？不会就删。
 
-Lead with the outcome and requested action. Add only context that affects a decision: relevant paths/entities, current state, previous decisions, known failed attempts, priorities, and boundaries. Do not copy the whole thread, tool logs, or every source into the prompt. If the destination is the same project chat, carry forward the critical constraint or changed instruction so it remains explicit; do not pretend the model has seen unavailable context.
+同一工作对话已有上下文时，写“基于当前项目/上次结果继续……”并明确本次目标及新增约束即可。重要边界仍需保留。交给全新对话则补足定位、必要背景或可读取的来源；不能假装对方看过侧面对话。
 
-Replace vague wording with concrete instructions only to the extent supported. "客观、多元分析" with a request for model comparison can become "对比能力、经济性、重叠选择，区分测评证据与推断". It cannot become an invented requirement to benchmark 100 tasks or obtain all internet reviews. Preserve the user's quality/format/success conditions; do not manufacture percentages, acceptance tests, deadlines, tools, architecture, or external publishing authority.
+不复制整个聊天、工具日志、模型选型分析或 Skill 流程；不添加泛用角色、思考链要求、机械步骤、无必要的测试/报告/审批、虚构验收指标。选择理由放在提示词外，协作授权放在提示词内。
 
-Use natural direct instructions and lightweight sections only when useful. For several connected goals, preserve their dependency order in one prompt: establish evidence → make the decision → carry out the authorized change → return the requested result. Avoid generic roles, lengthy procedure scripts, demands to think step by step, exhaustive alternative generation, repeated constraints, and unrequested reports. Strong reasoning models benefit from clear goals and constraints; forcing more explanation is not a substitute for them. [Official reasoning guidance](https://developers.openai.com/api/docs/guides/reasoning-best-practices)
+## 整体交付，按需协作
 
-For Luna, make the bounded target, needed inputs, and output explicit; do not conceal uncertainty or discard difficult parts to make a cheap model fit. For Sol/Astra, leave normal implementation choices to the working AI while preserving intent and stop conditions. Select the model only after this task translation. Output length is not the task's difficulty.
+默认一份整体目标提示词，由执行模型发现实施细节。不要为了让 Luna 适配而删掉困难要求，也不要默认拆成五份让用户分轮派发。用户确实要求逐阶段讨论/确认时保留该边界。
 
-For complex delegable work, load [hybrid-delegation.md](hybrid-delegation.md). If that route meets the quality/efficiency gate, put the actual host/worker responsibilities, the selected worker model and effort, grounded work packages, dependencies, concise evidence handoffs, and host integration in the copy-ready prompt. Predefine supported responsibilities rather than a guessed implementation; let the host adjust only what discovery changes. Do not make the user copy a separate execution policy or return for every ordinary subtask.
+选主模型带 Luna 时，通常只加一句具体授权：允许按实际需要将边界明确的工作交给 GPT-6 Luna / X-High 子代理，主模型负责关键判断、整合、必要核验和最终完成。只有已知分工影响质量或权限时才写具体职责/依赖；人数和普通步骤由主模型决定。详细判断见 [hybrid-delegation.md](hybrid-delegation.md)。
 
-## Decompose only when it helps completion
+## 修订与检查
 
-Use dependency stages within one prompt for authorized end-to-end work. Distinguish these from parallel workers and from separate user-managed stage handoffs. Keep a shared outcome and final integration owner. A fresh handoff is worthwhile only when it preserves quality and completion efficiency as well as reducing comprehensive cost. Ordinary investigation before implementation does not create an approval gate.
+返回完整的精简修订稿，保留原目标和兼容条件，不让用户合并补丁。每次同时给完整模型名和明确强度。用户明确要求提示词时本轮交付；关键未知项标注临时稿及条件性选型。
 
-When the user explicitly asks to discuss/confirm before editing, stop at that boundary. If one decision truly controls later work, route that stage and retain the overall goal. Independent repeated units can be batched; tightly coupled decisions should stay together. Avoid output bloat and unnecessary searches/tools, while keeping the evidence and checking needed for correctness.
+对照输入检查：目标正确、约束未丢、没有自加任务、不把未知变事实、停止边界不变。若重复之前失败的动作，必须有新依据或方法变化，不能只重新措辞。
 
-Better prompts can improve both quality and economy by reducing misunderstanding and rework; they do not guarantee numerical savings. Compare variants with behavioral examples and real-task outcomes when available. [Official prompt guidance](https://developers.openai.com/api/docs/guides/prompt-engineering)
+## 示例
 
-## Final semantic check
+评估边界：“评估当前页面的信息顺序，提出让阅读更连贯的调整建议。先给建议，暂不修改文件。”
 
-Every delivered or revised draft includes three actual outputs: the full model name, a concrete reasoning-effort value, and the complete editable prompt in one fenced block. An explicit request to output the prompt must receive that block in the current reply, including marked unknowns and conditional routing when necessary. A promise to write it later, a summary alone, or “use the previous settings” is incomplete. This handoff contract does not apply to a reply only discussing ambiguity or directly maintaining this router.
+兼容纠正：“优化这段 SQL 的性能，保持结果口径，优先可读性。不要执行查询；返回修改后的 SQL 并说明关键改动。”
 
-Compare the original intent to the prepared prompt: all requested outcomes retained; action and target correct; quality and efficiency preserved; priorities and mandatory/optional status unchanged; latest corrections applied narrowly; grounded references explicit; uncertainty not converted to fact; no extra implementation or authority; stop condition unchanged. For a hybrid prompt, confirm the pasted block itself identifies worker model/strength, distinct responsibilities, dependencies, usable handoffs, and final ownership. Remove only text that adds no task-relevant meaning. Repair drift before reporting the route.
-
-## Small examples
-
-**Assessment boundary.** Spoken: "那个排得有点散，先看看怎么更顺，今天先别改文件。" If project context identifies the page, prompt: "评估当前页面的信息顺序，提出让阅读更连贯的调整建议。先给建议，暂不修改文件。" Preserve assessment-only; do not turn it into implementation.
-
-**Compatible correction.** Spoken: "优化这个SQL，速度很重要，结果口径别动……不需要运行，给我改好的SQL和原因。" Prompt: "优化这段SQL的性能，保持结果口径。不要执行查询；返回修改后的SQL并说明关键改动。" No invented query plan, benchmark, database migration, or runtime success claim.
-
-**Two connected outcomes.** Spoken: "新旧模型都要看，能力和经济性，还有重叠的时候选谁；也看看我说话很散，提示词怎么更准。最后改这个Skill。Max我这没有。" Prompt: "基于当前Codex可用选项，对比新旧模型的能力、经济性和重叠任务选择，给出任务到模型及推理强度的建议；优化语音输入到可执行任务的转换，保留上下文、优先级和执行边界。把结论落实到本Skill并说明依据和限制。我的Codex没有Max，不把它作为可推荐选项；推理强度、Ultra和速度模式分别处理。" Do not reduce this to only a model list or only filler removal.
+整体协作：“完成当前项目的导出功能，沿用已确定的格式和权限要求。可按实际需要使用 GPT-6 Luna / X-High 子代理处理边界明确的工作；你负责关键判断、整合、必要核验和最终交付。”

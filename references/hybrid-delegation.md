@@ -1,63 +1,35 @@
-# Sol/Astra host with Luna X-High workers
+# 高级主模型按需带 Luna
 
-Checked 2026-10-04 (Asia/Shanghai). Load only for complex tasks with substantial delegable work. The router prepares one prompt; the destination Codex chat executes it. Optimize comprehensive cost **subject to full completion, required quality, and end-to-end completion efficiency**.
+规则更新：2026-10-10。路由器只选择协作方式并写提示词，实际分工由工作对话的主模型执行。
 
-## When the hybrid route wins
+## 选择协作还是单模型
 
-Compare with the lightest single-agent route that can meet all three requirements. Use a hybrid route when:
+优先选择足以完成整体目标的单模型。完整任务适合 Luna 就用 GPT-6 Luna / X-High；需要跨模块判断、处理重要不确定性或整合时用 Sol，明显能力缺口才考虑 Astra。
 
-- Sol/Astra is needed for global decisions, ambiguity, hard diagnosis, or integration, while substantial work fits Luna X-High.
-- Work packages have clear inputs, bounded scope, useful outputs, and stable dependencies. Read-heavy exploration, extraction, log analysis, independent document comparison, or implementation after a design decision can fit; task names alone do not establish suitability.
-- Compact handoffs let the host use worker evidence and inspect important points without repeating everything. Coordination, repeated context, tool use, and rework are unlikely to cancel the weighted-cost advantage.
-- Luna can preserve the required reliability, and delegation does not slow the critical path, add unnecessary waiting, or shift coordination to the user. Parallelize independent parts; sequential delegation must still preserve overall efficiency.
+主模型带 Luna 适用于：主模型不可替代的判断之外，还有工作量足够、边界清楚、容易交接且适合 Luna 的部分。比较协调、重复上下文、复核和返工成本是否抵消收益。任务复杂、文件很多本身不构成协作理由；强耦合任务可由主模型独立完成。
 
-When the whole outcome fits Luna, use Luna directly. When decisions are tightly coupled, Luna lacks the needed capability, or repeated negotiation would dominate, keep work with the capable host. Complexity, long documents, many files, or theoretical parallelism alone do not justify workers. A short host inspection can establish uncertain scope before confirming packages; the router must not invent paths or interfaces.
+不强制预拆任务，不默认五个子任务/五个代理，不让用户反复复制提示词或管理每个环节。通常推荐“GPT-6.1 Sol / Medium 或 High，按需带 GPT-6 Luna / X-High”，选定主模型一个具体强度；人数由主模型按范围和并发限制决定。
 
-## Price-weighted cost
+## 提示词内的最少协作授权
 
-Whole-task cost is **the sum of each agent's billed usage at its applicable input/cache/output rates, plus billed tools/services**. Include failed attempts, repeated reads, coordination, review, and integration in those totals; do not double-count a retry already included in measured usage. Reasoning consumes billable output where the billing system counts it. Token totals and elapsed time are separate observations; GPU compute is not directly measured here.
-
-Core Codex credit rates rechecked October 4 are in [benchmark-evidence.md](benchmark-evidence.md). For an identical uncached input/output mix, Luna's rates are 1/20 of new Sol's and 1/100 of Astra's. More Luna tokens can therefore cost less; actual token mix, host overhead, retries, and service fees determine the whole result. Included-plan depletion is not derived from these ratios. Use observed billing/allowance when available; otherwise label credit/API comparisons as proxies, not exact user-task costs. Do not assign arbitrary money values to user time: preserve completion efficiency as a separate constraint. [Official pricing](https://learn.chatgpt.com/docs/pricing)
-
-## Put the plan inside the pasted prompt
-
-Write actual work allocation, not just "use cheap agents where possible". Include only applicable information:
-
-- **Host ownership:** choose the appropriate Sol/Astra strength separately. Keep requirements, hard decisions, critical synthesis, meaningful review, and final delivery with it.
-- **Worker settings:** explicitly request **GPT-6 Luna / X-High** (`gpt-6-luna`, `xhigh`) through the destination's available collaboration tools. A role name does not set its model. Check accepted/resolved settings when exposed; do not claim an unavailable setting took effect.
-- **Grounded packages:** define each worker's purpose, relevant inputs/source range, scope or disjoint write area, usable result/evidence, and prerequisites. Combine related small units rather than one agent per file.
-- **Handoff and execution:** provide only relevant context plus shared constraints; return concise results/artifacts, evidence locations, and unresolved issues. Run independent packages concurrently; the host continues different useful work and waits when dependent decisions need results.
-- **Integration:** the host resolves conflicts, verifies what matters for the task, integrates all outputs, and completes the entire authorized outcome. Short handoffs must retain crucial facts. Do not repeat all worker work or ask the user to route every normal subtask.
-
-Predesign responsibilities and dependencies, leaving uncertain implementation steps to discovery. The host can revise materially affected packages while preserving every requested result, permission boundary, quality, and efficiency.
-
-If the collaboration tool requires a fresh or limited-history child to override its model, use that supported mode and provide the scoped task packet. Do not force full-history inheritance merely to reuse context, or invent unsupported tool arguments.
-
-## Avoid coordination waste
-
-Use the fewest workers doing meaningful work, within actual concurrency limits. Avoid blanket spawning, agent-per-file fan-out, nested delegation by default, unchanged polling, and duplicate reviews. Workers should not recruit more agents merely to shorten their own prompts. Parallel writes need distinct ownership; shared decisions and common-file edits require coordination or serialization.
-
-On a material failure, capability mismatch, or deteriorating critical path, reassess the affected package. Preserve completed work; narrow, reassign, or let the host finish it instead of repeated Luna attempts outside its capability. Keep necessary verification; do not add redundant checking or unrequested reports.
-
-If Luna/X-High cannot be explicitly selected, do not silently create inherited Sol/Astra workers and call the route economical. Let the capable host continue within the task boundary and briefly report the constraint. Do not modify global Codex configuration or build an API workaround without a request. The router cannot promise the destination has identical tools or access.
-
-## Compact prompt pattern
-
-Adapt the pattern to the actual task, replacing the bracketed descriptions with grounded responsibilities and omitting irrelevant clauses. Never return unresolved placeholders. Keep the rationale in this reference rather than pasting it into every task.
+在整体目标和约束之后，按实际需要加入：
 
 ```text
-完成[整体任务及约束]。在保持任务完整、质量和完成效率的前提下，尽量降低各模型用量按单价加权后的整个任务成本。
-你负责[关键判断与整合]；使用子代理，把[明确且工作量足够的部分]交给GPT-6 Luna，推理强度X-High。明确指定模型与强度，核对可见的实际设置，避免默认继承主持模型。
-[分别写明工作范围、输入、交付结果和必要依赖。]独立部分并行，相关小任务合并；共享修改明确唯一负责人。只传相关上下文，子代理返回简洁结果、证据位置及未解决问题。
-你继续处理不重叠的主任务，按依赖收集结果、复核关键点并完成最终交付，不重复全部子任务。根据实际发现调整分工；若Luna不胜任或协作影响质量、效率，由你接手相应部分。若无法设置Luna/X-High，使用当前模型完成，不暗中创建昂贵替代子代理。
+可按实际需要把边界明确的工作交给 GPT-6 Luna、推理强度 X-High 的子代理；你负责关键判断、分工、整合、必要核验和最终完成。协作无益或无法指定该模型时由你直接完成。
 ```
 
-This authorizes only the routed task. Assessment-only, no-execution, and approval boundaries apply to every worker. The router generates the instruction; it does not execute workers here.
+这句话明确授权目标工作对话启动指定子代理，不授权当前侧面对话执行。不要附上整套协作操作规程。已知职责、写入范围或先后依赖确实影响结果时才加一两句具体分工；不是每次必须枚举所有工作包。
 
-## Evidence boundary
+## 给执行主模型的原则
 
-Official docs support explicit delegation in ordinary local Codex and specifying worker model/strength through prompts or configuration. Unspecified children can inherit parent settings. Codex provides orchestration; model capability informs planning. Availability must match the destination. [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)
+- 先掌握实际范围，再决定是否协作和怎么分工。合并相关小工作，独立工作可并行，共享写入有明确负责人。
+- 显式指定 `gpt-6-luna` 和 `xhigh`；有可见的实际设置就核对。工具若要求有限历史才能改子代理模型，使用支持的方式并给必要上下文，避免默认继承昂贵主模型。
+- 子代理传递简洁结果、证据位置和未解决问题。主模型继续不同工作，复核关键点并整合，不把子代理全部工作再做一遍。
+- 子任务失败先判断缺信息、方法错误还是能力不足；保留已完成结果，调整方法或主模型接手，不反复让 Luna 做不胜任的事。
+- 所有子代理沿用用户的范围和停止边界。模型/强度不可用时主模型直接完成并说明限制，不暗中换成昂贵子代理或改全局配置。
 
-Lean, conditional instructions reduce irrelevant context and avoid overly rigid procedures. [Official skill guidance](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra)
+这些是选型与执行原则，不必整段复制到任务提示词。只有用户要求详细计划，或任务确实需要预先锁定分工时才展开。
 
-Eligibility and work-package rules above are routing judgments, not benchmarked savings. Real comparisons must include completeness/quality, elapsed time, correction rounds, per-model usage, and observed charges or applicable rates. No success probability or guaranteed saving follows from worker count or price ratios.
+## 成本判断
+
+计算整个任务各模型用量对应的费用，并考虑协调、工具、复核和返工；不把 token 数直接当成价格或算力。保留质量和完成效率，不承诺固定节省比例。历史价格及测评见 [benchmark-evidence.md](benchmark-evidence.md)，仅在影响当前决策时核实相关数据。

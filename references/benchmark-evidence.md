@@ -33,7 +33,7 @@ ARC Prize's available **X-High** results show Astra's strong abstract reasoning 
 
 Vals' old-6-Sol page was also reviewed. Its benchmark mix and API configuration differ from the above available-strength comparison; its new-6.1 page could not be retrieved. It helps check whether another evaluation agrees but is not a Codex setting recommendation. No unavailable-setting Vals result is used to choose a picker strength. [Vals old Sol evaluation](https://www.vals.ai/models/openai_gpt-6-sol)
 
-No defensible source here measures a model's special superiority at Chinese voice-to-task translation. Do not invent that specialty for Luna, Sol, or Astra. Distinguish document analysis, presentation evaluation, image perception, and image generation. Older vision anecdotes can also predate the September 25 image-encoding fix for 6 Sol/Luna. [API changelog](https://developers.openai.com/api/docs/changelog)
+No defensible source here measures a model's special superiority at clarifying Chinese requirements or drafting task prompts. Do not invent that specialty for Luna, Sol, or Astra. Distinguish document analysis, presentation evaluation, image perception, and image generation. Older vision anecdotes can also predate the September 25 image-encoding fix for 6 Sol/Luna. [API changelog](https://developers.openai.com/api/docs/changelog)
 
 ## Codex economy
 

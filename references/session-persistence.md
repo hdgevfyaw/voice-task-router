@@ -2,7 +2,7 @@
 
 ## 首次明确调用
 
-原生 `UserPromptSubmit` Hook 从本轮真实 `prompt` 识别明确的 `$voice-task-router` 调用（含 Codex 生成的 Markdown Skill 链接、前置 `codex://threads/...` 项目链接），在模型开始工作前为该事件的 `session_id` 自动登记并注入角色边界和输出契约。前置链接只是项目上下文，不能拿其中的 UUID 代替当前侧栏对话 ID。不从聊天标题、引用、代码块、系统 Skill 目录或历史记录推断激活。不修改项目设置，不执行工作任务。
+原生 `UserPromptSubmit` Hook 从本轮真实 `prompt` 识别明确的 `$task-clarifier` 调用（含 Codex 生成的 Markdown Skill 链接、前置 `codex://threads/...` 项目链接），在模型开始工作前为该事件的 `session_id` 自动登记并注入角色边界和输出契约。前置链接只是项目上下文，不能拿其中的 UUID 代替当前侧栏对话 ID。不从聊天标题、引用、代码块、系统 Skill 目录或历史记录推断激活。不修改项目设置，不执行工作任务。
 
 明确以本 Skill 为对象的维护请求只注入维护提示，不给未启用的对话登记激活。脚本只能识别直接的调用形式和明确维护措辞；语义上仍以用户要求为准。如果本轮实际上仅维护本 Skill，模型须纠正可能的首次误登记；不能把项目或其他 Skill 的维护当成这个例外。已经启用的对话维护后继续原模式。
 
@@ -13,10 +13,10 @@
 Hook 未加载或不能识别时，本轮依然按 Skill 工作，并补登记。使用**绝对脚本路径**与可用 Python：
 
 ```powershell
-& 'C:\Users\xiao\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -X utf8 'C:\Users\xiao\.codex\skills\voice-task-router\scripts\session_mode.py' activate --session-id '<当前真实对话 UUID>'
+& 'C:\Users\xiao\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -X utf8 'C:\Users\xiao\.codex\skills\task-clarifier\scripts\session_mode.py' activate --session-id '<当前真实对话 UUID>'
 ```
 
-用 `status` 核对状态，用 `deactivate` 退出。真实 UUID 应来自本轮 Hook 上下文或原生当前对话元数据。`CODEX_THREAD_ID` / `CODEX_SESSION_ID` 仅在是有效 UUID 时可用；沙箱中的 `1` 等占位值不是对话 ID。不能猜 ID、使用目标项目 ID或借用其他对话。状态写入用户 Skill 目录之外的 `state/voice-task-router`，如沙箱阻止写入，使用正常授权机制，不通过改其他目录来假装登记成功。核验输出后才能声称自动恢复已生效。
+用 `status` 核对状态，用 `deactivate` 退出。真实 UUID 应来自本轮 Hook 上下文或原生当前对话元数据。`CODEX_THREAD_ID` / `CODEX_SESSION_ID` 仅在是有效 UUID 时可用；沙箱中的 `1` 等占位值不是对话 ID。不能猜 ID、使用目标项目 ID或借用其他对话。状态目录仍使用 `state/voice-task-router`，以保留更名前已登记的会话；如果沙箱阻止写入，使用正常授权机制，不通过改其他目录来假装登记成功。核验输出后才能声称自动恢复已生效。
 
 明确退出或要求在当前对话执行时，先停用本对话再处理。普通“实现这个”“继续”“输出提示词”不退出；退出不要求固定口令。用户只要求退出时不开始项目任务。
 

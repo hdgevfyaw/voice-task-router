@@ -1,19 +1,21 @@
-# Voice Task Router
+# Task Clarifier
 
-> **先把想法说清楚，再把任务交出去。**
+> **先把需求理清，再选择合适的模型与执行方式。**
 
-Voice Task Router 是一个面向 Codex 的需求讨论 skill：把还没理顺的语音或文字想法，整理成一份**清楚、可修改、能直接交给工作对话执行的任务说明**。
+Task Clarifier 是一个面向 Codex 的需求澄清与模型选择 Skill：把还没理顺的语音或文字想法，通过持续讨论整理成一份**清楚、精简、可直接交给工作对话执行的提示词**，并按任务难度建议模型、推理强度和必要的协作方式。
 
-你不必一开始就会写提示词，也不用把要求一次讲完。先说个大概，想到新条件时继续补充，发现理解错了就纠正。Router 会维护同一份需求草稿，只追问可能改变任务方向的关键问题，最后给出完整提示词和模型、推理强度建议。
+你不必一开始就会写提示词，也不用把要求一次讲完。先说个大概，想到新条件时继续补充，发现理解错了就纠正。Skill 会维护同一份需求草稿，只追问可能改变任务方向的关键问题；目标明确后，给出精简完整的提示词和模型、推理强度建议。
 
 ## 本次更新｜2026-10-10
 
+- 更名为 **Task Clarifier**，突出持续澄清需求、编写精简任务提示词并推荐模型与协作方式的核心能力。
 - 关联工作对话后，每轮答疑、补充和改稿前都刷新进度，按完成、进行中和阻塞状态决定下一步。
 - 提示词围绕目标精简，只保留影响执行的上下文、约束和交付要求；失败任务再次尝试时须有新证据或方法变化。
 - 默认给一份完整任务提示词；按任务难度选择模型与推理强度，复杂任务可由 Sol/Astra 主模型按需分配 Luna X-High，并由主模型负责整合交付。
 
 ## Latest update — 2026-10-10
 
+- Renamed to **Task Clarifier** to emphasize its core capabilities: clarifying requirements, drafting concise task prompts, and recommending models and collaboration.
 - Refresh the linked work chat before every discussion, correction, and prompt revision; use current completion, active-work, and blocker evidence to choose next steps.
 - Keep prompts concise and centered on the outcome, preserving only relevant context, constraints, and deliverables. Repeated attempts need new evidence or a changed approach.
 - Prefer one end-to-end task prompt. Route by task difficulty and reasoning effort; let a capable Sol/Astra host use Luna X-High workers when useful and own final integration.
@@ -30,15 +32,15 @@ flowchart LR
     F -. "想到新要求 / 说下一步" .-> B
 ~~~
 
-你负责表达和决定，Router 负责整理和交接。它让需求在多轮讨论中保持连贯，但默认不会替你开始写代码、改项目、生成素材或把任务派给别人。
+你负责表达和决定，Task Clarifier 负责理清需求、准备执行提示词并推荐合适的模型。它让需求在多轮讨论中保持连贯，但默认不会替你开始写代码、改项目、生成素材或把任务派给别人。
 
 ## 它解决什么麻烦？
 
 好点子往往不是一份完整需求文档，而是一段口述，之后才慢慢补出限制、优先级和例子。普通的一问一答容易让信息散落在聊天里：改了一处却丢了旧约束，需求还没讲清就开始执行，或者最后仍要自己把几轮内容重新拼成提示词。
 
-Voice Task Router 把这个过程变成一份持续维护的需求草稿：
+Task Clarifier 把这个过程变成一份持续维护的需求草稿：
 
-| 常见情况 | Router 怎么帮你 |
+| 常见情况 | 这个 Skill 怎么帮你 |
 |---|---|
 | 想法多，表达顺序比较乱 | 归纳目标、约束、例子和未知项，尽量保留原意 |
 | 说完后又想起要求 | 把新信息并入同一份草稿，不必从头重讲 |
@@ -54,7 +56,7 @@ Voice Task Router 把这个过程变成一份持续维护的需求草稿：
 在 Codex 新对话里明确调用 skill，然后像平常说话一样描述目标：
 
 ~~~text
-$voice-task-router
+$task-clarifier
 
 我想做一个社团活动报名小程序。社员主要用手机报名，社长需要管理报名名单。我还没想全，先帮我把需求理顺，暂时不要写代码。
 ~~~
@@ -73,7 +75,7 @@ $voice-task-router
 候补按提交时间排序，这点也加上。
 ~~~
 
-讨论清楚后，说“输出提示词”或“整理成最终提示词”。Router 会把兼容的要求合并成一份**完整草稿**，同时给出具体模型名和推理强度。你确认后，把它复制到工作对话继续推进。
+讨论清楚后，说“输出提示词”或“整理成最终提示词”。Task Clarifier 会把兼容的要求合并成一份**精简完整草稿**，同时给出具体模型名、推理强度和必要的协作建议。你决定何时把它复制到工作对话继续推进。
 
 > **不用特殊格式，也不用先学会写提示词。** “补充”“纠正”“输出提示词”“下一步”都可以直接说。
 
@@ -91,7 +93,7 @@ $voice-task-router
 同一个活动不能重复报名。名单只有社长能看，社员只能看自己的报名状态。
 ~~~
 
-Router 把这些信息合成同一份草稿：
+Task Clarifier 把这些信息合成同一份草稿：
 
 - 目标：社团活动报名小程序
 - 使用者：社团成员和社长
@@ -112,7 +114,7 @@ Router 把这些信息合成同一份草稿：
 
 ## 为什么不直接用普通聊天？
 
-普通聊天也能整理需求。Router 的特别之处，是把**持续讨论、需求版本维护和执行交接**作为一条连贯流程：
+普通聊天也能整理需求。Task Clarifier 的特别之处，是把**持续讨论、需求版本维护、提示词编写和模型选择**作为一条连贯流程：
 
 - **不要求一次说完**：想到的新内容可以随时加进同一份草稿。
 - **改一处，不丢其他要求**：更新明确纠正的内容，保留兼容的旧约束。
@@ -150,10 +152,10 @@ Hook 是可选的，需要用户在 Codex 环境中自行配置并信任；仓�
 
 把整个仓库目录放进 Codex 的 skills 目录，保留 **SKILL.md**、**agents/**、**references/** 和 **scripts/** 的相对结构：
 
-- 设置了 **CODEX_HOME**：放到 **CODEX_HOME/skills/voice-task-router/**
-- 未设置时通常放到 **~/.codex/skills/voice-task-router/**
+- 设置了 **CODEX_HOME**：放到 **CODEX_HOME/skills/task-clarifier/**
+- 未设置时通常放到 **~/.codex/skills/task-clarifier/**
 
-安装后，在新对话开头明确调用 **$voice-task-router**。
+安装后，在新对话开头明确调用 **$task-clarifier**。
 
 ## 行为边界与隐私
 
@@ -170,7 +172,7 @@ Hook 是可选的，需要用户在 Codex 环境中自行配置并信任；仓�
 | **SKILL.md** | 主工作流程、模式边界与输出契约 |
 | **agents/openai.yaml** | 技能展示名称、描述与默认调用提示 |
 | **references/requirements-dialogue.md** | 连续讨论、需求状态与下一步 |
-| **references/voice-prompting.md** | 将口述整理成完整提示词 |
+| **references/prompt-writing.md** | 围绕目标写精简完整的执行提示词 |
 | **references/model-routing.md** | 模型、推理强度、速度和综合成本的选择 |
 | **references/benchmark-evidence.md** | 带日期的模型与计费证据快照 |
 | **references/hybrid-delegation.md** | 单模型与混合协作的比较方法 |
@@ -180,7 +182,7 @@ Hook 是可选的，需要用户在 Codex 环境中自行配置并信任；仓�
 
 ## English
 
-**Voice Task Router turns unfinished thoughts into a clear, editable task brief you can hand to a Codex work conversation.** Start with voice or text, add details as they occur to you, and correct misunderstandings without rebuilding the prompt from scratch. It keeps one evolving brief, asks only about missing information that could change the direction, then returns a copy-ready prompt with model and reasoning-effort recommendations.
+**Task Clarifier turns an unfinished request into a clear, concise prompt and recommends a suitable model and reasoning effort.** Start with voice or text, add details as they occur to you, and correct misunderstandings without rebuilding the prompt from scratch. It keeps one evolving brief, asks only about missing information that could change the direction, then returns a copy-ready prompt with model, reasoning-effort, and collaboration recommendations.
 
 ~~~mermaid
 flowchart LR
@@ -193,7 +195,7 @@ flowchart LR
     F -. "More details or next step" .-> B
 ~~~
 
-Start a new Codex conversation with **$voice-task-router** and a natural request, such as “I want to plan a club event signup app. Help clarify the requirements first; do not write code yet.” Follow up with ordinary messages like “add this constraint,” “correction,” or “give me the final prompt.” You decide when to copy the result into a work conversation; the skill does not automatically execute project work.
+Start a new Codex conversation with **$task-clarifier** and a natural request, such as “I want to plan a club event signup app. Help clarify the requirements first; do not write code yet.” Follow up with ordinary messages like “add this constraint,” “correction,” or “give me the final prompt.” You decide when to copy the result into a work conversation; the skill does not automatically execute project work.
 
 See the Chinese sections above for the detailed walkthrough, installation, architecture, privacy boundaries, and repository contents.
 

@@ -1,4 +1,4 @@
 interface:
-  display_name: "语音需求与任务推进"
-  short_description: "持续澄清需求，每轮刷新关联进度，产出精简提示词并选择模型、强度与协作方式"
-  default_prompt: "使用 $voice-task-router 澄清目标，关联工作对话后每轮读取最新上下文，给精简完整提示词和具体模型、推理强度；复杂任务按需推荐主模型带 Luna。"
+  display_name: "需求澄清与模型选择"
+  short_description: "持续澄清目标，写精简任务提示词并推荐模型、推理强度和协作方式"
+  default_prompt: "使用 $task-clarifier 澄清目标；关联工作对话后每轮刷新进度，产出精简任务提示词并推荐模型、推理强度和必要的协作方式。"
